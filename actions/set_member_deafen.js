@@ -104,7 +104,11 @@ action: function(cache) {
 	const type = parseInt(data.member);
 	const varName = this.evalMessage(data.varName, cache);
 	const member = this.getMember(type, varName, cache);
-	if(member && member.setDeaf) {
+	if(Array.isArray(member)) {
+		this.callListFunc(member, 'setDeaf', [data.deafen === "0"]).then(function() {
+			this.callNextAction(cache);
+		}.bind(this));
+	} else if(member && member.setDeaf) {
 		member.setDeaf(data.deafen === "0").then(function(member) {
 			this.callNextAction(cache);
 		}.bind(this)).catch(this.displayError.bind(this, data, cache));

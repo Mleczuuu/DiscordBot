@@ -114,7 +114,11 @@ action: function(cache) {
 	const type = parseInt(data.server);
 	const varName = this.evalMessage(data.varName, cache);
 	const server = this.getServer(type, varName, cache);
-	if(server && server.setRegion) {
+	if(Array.isArray(server)) {
+		this.callListFunc(server, 'setRegion', [data.region]).then(function() {
+			this.callNextAction(cache);
+		}.bind(this));
+	} else if(server && server.setRegion) {
 		server.setRegion(data.region).then(function() {
 			this.callNextAction(cache);
 		}.bind(this)).catch(this.displayError.bind(this, data, cache));

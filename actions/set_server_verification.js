@@ -106,10 +106,14 @@ action: function(cache) {
 	const type = parseInt(data.server);
 	const varName = this.evalMessage(data.varName, cache);
 	const server = this.getServer(type, varName, cache);
-	if(server && server.setVerificationLevel) {
-		server.setVerificationLevel(parseInt(data.verification)).then(function() {
+	if(Array.isArray(server)) {
+		this.callListFunc(server, 'setVerificationLevel', [parseInt(data.verification)]).then(function() {
 			this.callNextAction(cache);
-		}.bind(this)).catch(this.displayError.bind(this, data, cache));
+		}.bind(this));
+	} else if(server && server.setVerificationLevel) {
+			server.setVerificationLevel(parseInt(data.verification)).then(function() {
+				this.callNextAction(cache);
+			}.bind(this)).catch(this.displayError.bind(this, data, cache));
 	} else {
 		this.callNextAction(cache);
 	}
